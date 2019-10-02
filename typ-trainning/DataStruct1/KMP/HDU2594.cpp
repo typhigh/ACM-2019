@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int MAXN = 50010;
+const int MAXN = 100010;
 
 char s[MAXN];
 int n, m, f[MAXN];
@@ -17,12 +17,12 @@ void getFail(char* P, int m, int* f) {
 int main() {
 	while (~scanf("%s", s)) {
 		n = strlen(s);
-		scanf("%s", s + n);
-		m = strlen(s+n);
-		getFail(s, n+m, f);
-		int x = f[n+m];
-		x = min(x, min(n, m));
-		if (x) printf("%s %d", s+n+m-x, x); 
+		scanf("%s", s+n+1);
+		s[n] = '$';
+		m = strlen(s+n+1);
+		getFail(s, n+m+1, f);
+		int x = f[n+m+1];;
+		if (x) printf("%s %d\n", s+n+m+1-x, x); 
 		else puts("0");
 	}
 }

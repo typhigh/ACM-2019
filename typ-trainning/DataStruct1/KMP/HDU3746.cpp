@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int MAXN = 100010;
+const int MAXN = 200010;
 char s[MAXN];
 int f[MAXN];
 
@@ -20,7 +20,7 @@ int main() {
 		scanf("%s", s);
 		int m = strlen(s);
 		getFail(s, f, m);
-		int x = m-2*f[m];
-		cout << max(0, x) << endl;
+		if (f[m] && m % (m-f[m]) == 0) puts("0");
+		else printf("%d\n", (m - f[m]) - m % (m - f[m]));
 	}
 }
