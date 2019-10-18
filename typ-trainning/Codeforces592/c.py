@@ -1,17 +1,15 @@
-
-
 def gcd(a, b): 
 	if b == 0:
 		return a
 	return gcd(b, a%b)
 
-def exgcd(a, b, d, x, y):
+def exgcd(a, b, d):
 	if b == 0:
 		d = a
 		x = 1
 		y = 0
 		return d, x, y
-	d, x, y = exgcd(b, a%b, d, y, x)
+	d, y, x = exgcd(b, a%b, d)
 	y = y - x*(a//b)
 	return d, x, y
 
@@ -21,9 +19,10 @@ def Calc(x, y):
 	return (x + y - 1) // y
 
 def main():
-	n, p, d, w = map(int, input().split(" "))
+	n, p, w, d = map(int, input().split(" "))
 	g = gcd(d, w)
-
+	
+#	print(g)
 	if p % g > 0:
 		print("-1");
 		return
@@ -33,14 +32,17 @@ def main():
 	tmp = 0
 	x = 0
 	y = 0
-	d, x, y = exgcd(w, d, tmp, x, y)
+	_d, x, y = exgcd(w, d, tmp)
 	x = x * p
 	y = y * p
-	print(str(x) + " " + str(y))
+#	print(str(x) + " " + str(y))
 	if y < 0 :
 		add = Calc(-y, w) 
+#		print(add)
+#		print(d)
 		y += add * w
 		x -= add * d
+#		print(str(x) + " " + str(y))
 		if x < 0 or x + y > n:
 			print("-1")
 		else :
@@ -49,7 +51,7 @@ def main():
 	
 	add = y // w
 	y -= add * w
-	x += add * w
+	x += add * d
 	if x < 0 or x + y > n :
 		print("-1")
 	else:
