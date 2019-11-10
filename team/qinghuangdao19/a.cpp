@@ -1,160 +1,66 @@
 #include <bits/stdc++.h>
-#define INF 1000000000LL
-#define pi acos(-1)
 using namespace std;
-const int M = 10010; 
-vector<long long>f[M],nowf;
-int n,m;
-struct point
-{
-	long long x,y;
-	point(long long x=0,long long y=0):x(x),y(y){}
-}a[M],now;
-point operator + (const point &x,const point &y)
-{
-	return point(x.x+y.x,x.y+y.y);
-}
-point operator - (const point &x,const point &y)
-{
-	return point(x.x-y.x,x.y-y.y);
-}
-long long gcd(long long x,long long y)
-{
-	if(y==0)
-		return x;
-	return gcd(y,x%y);
-}
-point Rotate(point A,int flag)
-{
-	int cos1=0,sin1=1;
-	return point(A.x*cos1-A.y*sin1,A.x*sin1+A.y*cos1);
-}
-long long deal(int x,long long val)
-{
-	vector<long long> &y = f[x];
-	auto low = lower_bound(y.begin(), y.end(), val)
-	if (low == y.end()) return 0;
-	auto high = upper_bound(y.begin(), y.end(), val);
-	return high - low;
-}
-int main()
-{
-	scanf("%d%d",&n,&m);
-	for(int i=1;i<=n;i++)
-		scanf("%lld%lld",&a[i].x,&a[i].y);
-	for(int i=1;i<=n;i++)
-	{
-		for(int j=1;j<=n;j++)
-			if(i!=j)
-			{
-				point v=a[j]-a[i];
-				long long h=gcd(v.x,v.y);
-				v.x/=h;
-				v.y/=h;
-				if((long long)v.x*v.y<0ll)
-				{
-					v.x=abs(v.x);
-					if(v.y>0)
-						v.y=-v.y;
-				}
-				else
-				{
-					v.x=abs(v.x);
-					v.y=abs(v.y);
-				}
-				f[i].push_back(v.x*INF+v.y);
-			}
-		sort(f[i].begin(),f[i].end());
-		f[i].push_back((long long)INF*INF);
+typedef long long LL;
+const int MAXN = 2020;
+
+struct Point {
+	LL x, y;
+	Point base() const {
+		if (x < 0 || (x == 0 && y < 0)) return Point{-x, -y};
+		return *this;
 	}
-	for(int i=1;i<=m;i++)
-	{
-		scanf("%lld%lld",&now.x,&now.y);
-		long long ans=0;
-		long long cnt=0;
-		nowf.clear();
-		for(int j=1;j<=n;j++)
-		{
-			point v=a[j]-now;
-			long long h=gcd(v.x,v.y);
-			v.x/=h;
-			v.y/=h;
-			if(v.x*v.y<0)
-			{
-				v.x=abs(v.x);
-				if(v.y>0)
-					v.y=-v.y;
-			}
-			else
-			{
-				v.x=abs(v.x);
-				v.y=abs(v.y);
-			}
-			nowf.push_back(v.x*INF+v.y);
-		}
-		sort(nowf.begin(),nowf.end());
-		nowf.push_back((long long)INF*INF);
-		for(int j=1;j<=n;j++)
-		{
-			point v=now-a[j];
-			v=Rotate(v,1);
-			long long h=gcd(v.x,v.y);
-			v.x/=h;
-			v.y/=h;
-			if((long long)v.x*v.y<0ll)
-			{
-				v.x=abs(v.x);
-				if(v.y>0)
-					v.y=-v.y;
-			}
-			else
-			{
-				v.x=abs(v.x);
-				v.y=abs(v.y);
-			}
-			ans+=deal(j,v.x*INF+v.y);
-			v=a[j]-now;
-			v=Rotate(v,1);
-			h=gcd(v.x,v.y);
-			v.x/=h;
-			v.y/=h;
-			if((long long)v.x*v.y<0ll)
-			{
-				v.x=abs(v.x);
-				if(v.y>0)
-					v.y=-v.y;
-			}
-			else
-			{
-				v.x=abs(v.x);
-				v.y=abs(v.y);
-			}
-			int l=0,r=nowf.size()-1;
-			while(l<r)
-			{
-				int mid=l+r>>1;
-				if(nowf[mid]<v.x*INF+v.y)
-					l=mid+1;
-				else
-					r=mid;
-			}
-			int st=l;
-			l=0,r=nowf.size()-1;
-			while(l<r)
-			{
-				int mid=l+r>>1;
-				if(nowf[mid]<=v.x*INF+v.y)
-					l=mid+1;
-				else
-					r=mid;			
-			}
-			if(nowf[l]>v.x*INF+v.y)
-				l--;
-			if(nowf[st]==v.x*INF+v.y)
-				cnt+=l-st+1;
-		}
-		ans+=cnt/2;
-		printf("%lld\n",ans);
+	bool operator < (const Point& rhs) const {
+		Point a = base(), b = rhs.base();
+		return a.x * b.y < a.y * b.x;
 	}
-	return 0;
-} 
+	void read() { cin >> x >> y;}
+}P[MAXN], v[MAXN];
+
+typedef Point Vector;
+Vector operator - (Point a, Point b) {
+	return Point {a.x - b.x, a.y - b.y};
+}
+
+Vector rotate90(Vector a) {
+	return Vector{a.y, -a.x};
+}
+
+map<Vector, int> mp;
+
+LL res[MAXN];
+int main() {
+	int n, m;
+	scanf("%d %d", &n, &m);
+	for (int i = 0; i < n; ++i) P[i].read(); 
+	for (int q = 0; q < m; ++q) {
+		v[q].read();
+		mp.clear();
+		LL ans = 0;
+		for (int i = 0; i < n; ++i) {
+			Vector t = P[i] - v[q];
+			t = rotate90(t);
+			++mp[t];
+		}
+		for (auto it : mp) {
+			Vector p = rotate90(it.first);
+			auto iter = mp.find(p);	
+			if (iter != mp.end()) ans += 1LL * it.second * iter->second;
+		}
+		res[q] = ans / 2;
+	}
+	
+	for (int i = 0; i < n; ++i) {
+		mp.clear();
+		for (int j = 0; j < n; ++j) 
+			if (j != i) 
+				mp[P[j] - P[i]]++;
+		for (int q = 0; q < m; ++q) { 
+			Vector t = v[q] - P[i];
+			t = rotate90(t);
+			auto iter = mp.find(t);
+			if (iter != mp.end()) res[q] += iter->second; 
+		}
+	}
+
+	for (int i = 0; i < m; ++i) cout << res[i] << '\n';
+}
